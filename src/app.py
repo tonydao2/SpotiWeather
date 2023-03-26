@@ -20,22 +20,21 @@ def hello():
 def login():
       sp_oauth = create_spotify_oauth()
       auth_url = sp_oauth.get_authorize_url()
-      return redirectPage(auth_url)
+      return redirect(auth_url)
 
 @app.route("/redirect")
 def redirectPage():
-      return 'redirect'
+      return 'redirected'
 
 def create_spotify_oauth():
     return SpotifyOAuth(
-        client_id = "a6fa6ca9891241a78bafe9fcea216bf0"
-        client_secret = "535a6e79540f405e9530b56ebcb2953a"
+        client_id = "a6fa6ca9891241a78bafe9fcea216bf0",
+        client_secret = "535a6e79540f405e9530b56ebcb2953a",
         redirect_uri=url_for('redirectPage', _external=True),
-         scope="user-library-read")
+         scope="playlist-read-private")
 
 
 
 
 if __name__ == "__main__":
-    webbrowser.open_new('http://127.0.0.1:5000/')
-    app.run(port=5000, debug=True, use_reloader=False)
+    app.run(port=5000, debug=True)
