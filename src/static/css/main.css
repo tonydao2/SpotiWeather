@@ -1,0 +1,30 @@
+/* Background for website */
+body { 
+    background: url(https://miro.medium.com/v2/resize:fit:1400/format:webp/1*SPYhnNnAFNDdZ-Z5cQWmdw.jpeg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.TitleHeader {
+    font-weight: ;
+    word-wrap: normal;
+    border: 0px;
+    padding: 20px;
+    margin-top;: 3px:
+    height: 10px;
+    text-align: center;
+    font-size: 30px;
+    color: white;
+    font-family: 'Bubblegum Sans';
+}
+
+.InfoHeader {
+    font-weight: 400;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 18px;
+    color: black;
+}
+
