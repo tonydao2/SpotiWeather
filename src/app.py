@@ -2,6 +2,8 @@ from flask import Flask, request, render_template, jsonify,url_for,redirect,sess
 import webbrowser
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import os
+import json
 
 app = Flask(__name__)
 
@@ -9,6 +11,8 @@ app = Flask(__name__)
 # OAuth
 app.secret_key = "super secret key"
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+secrets = json.load(open("client_secret.json", "r"))
+    
 
 
 # Default page
@@ -22,15 +26,15 @@ def login():
       auth_url = sp_oauth.get_authorize_url()
       return redirect(auth_url)
 
-@app.route("/redirect")
+@app.route("/redirect/")
 def redirectPage():
-      return 'redirected'
+      return render_template('home.html')
 
 def create_spotify_oauth():
     return SpotifyOAuth(
-        client_id = "a6fa6ca9891241a78bafe9fcea216bf0",
-        client_secret = "535a6e79540f405e9530b56ebcb2953a",
-        redirect_uri=url_for('redirectPage', _external=True),
+            client_id=secrets["client_id"],
+            client_secret=secrets["client_secret"],
+        redirect_uri="http://127.0.0.1:5000/redirect/",
          scope="playlist-read-private")
 
 
@@ -38,3 +42,4 @@ def create_spotify_oauth():
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
+   
