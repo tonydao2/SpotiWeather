@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Main</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+
+    <body>
+        {% if name %}
+            <h1 class="TitleHeader">Welcome to our website {{name}} </h1>
+        {% endif %}
+
+        <h1 class="InfoHeader">This is your playlist for today</h1>
+         
+        <div class="container">
+               <form method="POST", action="/refresh">
+                    <button>Refresh if you do not like the playlist</button>
+                </form>
+        </div>
+
+        <form method="POST", action="/logout">
+        <ul>
+            <li class="Logout">Log out</li>
+        </ul>
+
+
+         
+    </body>

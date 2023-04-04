@@ -50,10 +50,36 @@ button {
 
 button:hover {
     color: white;
-    width:;
     box-shadow: 0 0 20px rgba(3, 1, 17, 0.6);
     background-color: rgb(26, 172, 75);
 }
+
+.Logout {
+    color: rgb(245, 125, 171);
+    float: right;
+    padding: 10px 0;
+    transition: 0.4s;
+    font-weight: 800;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul {
+    position: absolute;
+    top: 0;
+    width: 98%;
+}
+  
+li:hover {
+    cursor: pointer;
+}
+
 
 
    

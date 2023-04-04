@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = "super secret key"
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 secrets = json.load(open("client_secret.json", "r"))
-    
+
 
 
 # Default page
@@ -21,14 +21,19 @@ def hello():
 	return render_template('home.html')
 
 @app.route("/login")
-def login():
+def SpotifyLogin():
       sp_oauth = create_spotify_oauth()
       auth_url = sp_oauth.get_authorize_url()
       return redirect(auth_url)
 
+@app.route("/logout")
+def SpotifyLogout():
+      session.clear()
+      return render_template('home.html', message="You have been logged out.")
+
 @app.route("/redirect/")
 def redirectPage():
-      return render_template('home.html')
+      return render_template('redirect.html', name='Tony')
 
 def create_spotify_oauth():
     return SpotifyOAuth(
