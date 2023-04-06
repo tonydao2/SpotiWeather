@@ -6,19 +6,19 @@
     </head>
 
     <body>
-        {% if message}
-
-        {% endif %}
         
-        <h1 class="TitleHeader">Welcome to INSERT WEBNAME</h1>
+        <h1 class="TitleHeader">INSERT WEBNAME</h1>
+
+        {% if message %}
+            <h1 class="InfoHeader">ASDKJH</h1>
+        {% endif %}
 
         <h1 class="InfoHeader">Log in with spotify and we will give you a playlist based on the weather at your current location</h1>
-        
+
         <div class="container">
                <form method="GET", action="/login">
                     <button>Log in with Spotify</button>
                 </form>
         </div>
         
-        <script src="index.js"></script>
     </body>
