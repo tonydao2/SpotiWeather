@@ -12,7 +12,8 @@ app = Flask(__name__)
 app.secret_key = "super secret key"
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 secrets = json.load(open("client_secret.json", "r"))
-
+weatherApi = secrets["openWeather"]
+locationApi = secrets["location"]
 
 
 # Default page
@@ -41,13 +42,13 @@ def create_spotify_oauth():
 
 
 def weatherSearch(name):
-    URL = "https://api.openweathermap.org/data/2.5/weather?q="+name+"&APPID=4261f6701a428ea58ca7653d90f791a6&units=imperial"
+    URL = "https://api.openweathermap.org/data/2.5/weather?q="+name+"&APPID=" + weatherApi+"&units=imperial"
     response = requests.get(URL)
     return response.json()
 
 
 def getLocation():
-    URL = 'http://api.ipstack.com/check?access_key=8fcfdb30749fa16b0f67b238213e95aa'
+    URL = 'http://api.ipstack.com/check?access_key='+locationApi
     geo_req = requests.get(URL)
     geo_json = json.loads(geo_req.text)
     latitude = geo_json['latitude']
