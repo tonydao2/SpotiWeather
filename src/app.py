@@ -60,7 +60,7 @@ def getLocation():
 def redirectPage():
       cityName = getLocation()
       result = weatherSearch(cityName)
-      return render_template('redirect.html', name='Tony') # weatherResponse=True, cityName=result.get("name"), temp=result.get("main").get("temp"), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
+      return render_template('redirect.html', name='Tony', weatherResponse=True, cityName=result.get("name"), temp=result.get("main").get("temp"), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
 
 
 if __name__ == "__main__":
