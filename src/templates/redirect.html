@@ -11,17 +11,32 @@
         {% endif %}
 
         <h1 class="InfoHeader">This is your playlist for today</h1>
-         
+        
         <div class="container">
-               <form method="POST", action="/refresh">
-                    <button>Refresh if you do not like the playlist</button>
-                </form>
-        </div>
+            <button class="Button_Wrapper">Add playlist to spotify</button>
+            <form method="POST", action="/refresh">
+                <button>Refresh the song choices</button>
+            </form>
+       </div>
+
+        <table style="align-items: center;">
+            <thread>
+                <tr>
+                    <th>Track</th>
+                    <th>Artist</th>
+                    <th>Time</th>
+                </tr>
+            </thread>
+
+
+        </table>
+
 
         <form method="POST", action="/logout">
         <ul>
-            <li class="Logout">Log out</li>
+            <li class="Logout"><a href="/logout">Log out</a></li>
         </ul>
+        </form>
 
 
          

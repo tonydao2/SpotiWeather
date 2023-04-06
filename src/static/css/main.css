@@ -80,6 +80,24 @@ li:hover {
     cursor: pointer;
 }
 
+table {
+    margin-top: 10px;
+    width: 100%;
+    table-layout: fixed;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+th {
+    padding: 10px; 
+    display: table-cell;
+    vertical-align: inherit;
+}
 
 
    
