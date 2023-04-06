@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, jsonify,url_for,redirect,sess
 import webbrowser
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import os
+import os, requests
 import json
 
 app = Flask(__name__)
@@ -31,9 +31,6 @@ def SpotifyLogout():
       session.clear()
       return render_template('home.html', message="You have been logged out.")
 
-@app.route("/redirect/")
-def redirectPage():
-      return render_template('redirect.html', name='Tony')
 
 def create_spotify_oauth():
     return SpotifyOAuth(
@@ -43,6 +40,26 @@ def create_spotify_oauth():
          scope="playlist-read-private")
 
 
+def weatherSearch(name):
+    URL = "https://api.openweathermap.org/data/2.5/weather?q="+name+"&APPID=4261f6701a428ea58ca7653d90f791a6&units=imperial"
+    response = requests.get(URL)
+    return response.json()
+
+
+def getLocation():
+    URL = 'http://api.ipstack.com/check?access_key=8fcfdb30749fa16b0f67b238213e95aa'
+    geo_req = requests.get(URL)
+    geo_json = json.loads(geo_req.text)
+    latitude = geo_json['latitude']
+    longitude = geo_json['longitude']
+    city = geo_json['city']
+    return city
+
+@app.route("/redirect/")
+def redirectPage():
+      cityName = getLocation()
+      result = weatherSearch(cityName)
+      return render_template('redirect.html', name='Tony') # weatherResponse=True, cityName=result.get("name"), temp=result.get("main").get("temp"), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
 
 
 if __name__ == "__main__":
