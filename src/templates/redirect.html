@@ -3,31 +3,7 @@
     <head>
         <title>Main</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-        <style>
-                    .login-card {
-            position: relative;
-            z-index: 3;
-            width: 40%;
-            margin: 0 20px;
-            padding: 70px 30px 44px;
-            border-radius: 1.25rem;
-            background: #fff;
-            text-align: center;
-        }
 
-        .login-card > h2 {
-            font-size: 36px;
-            font-weight: 800;
-            margin: 0 0 30px;
-        }
-
-        .login-card > h3 {
-            font-size: 1rem;
-            font-weight: 20;
-            margin: 0 0 30px;
-            color: rgba(0,0,0,0.38);
-        }
-        </style>
     </head>
 
     <body>
@@ -66,12 +42,3 @@
 
          
     </body>
-
-       <!-- {% if(weatherResponse) %}
-        <h1> {{cityName}}</h1>
-        <h2> {{temp}} °F</h2>
-        <h3> {{description}} and humidity {{h}}% </h3>
-        {% else %}
-            <h2>Weather App</h2>
-        <h3>Enter a city</h3>
-        {% endif %} -->
