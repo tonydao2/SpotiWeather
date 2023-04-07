@@ -8,17 +8,18 @@ body {
 }
 
 .login-card {
-    position: relative;
+    position: absolute;
     width: 40%;
     margin: 0 20px;
-    padding: 70px 30px 44px;
     border-radius: 1.25rem;
-    text-align: center;
+    text-align: left;
+    top: 0;
+    left: 0;
 }
 
 .login-card > h2 {
     font-size: 32px;
-    font-weight: 800;
+    font-weight: 500;
     margin: 0 0 30px;
 }
 
@@ -101,6 +102,24 @@ li:hover {
     cursor: pointer;
 }
 
+table {
+    margin-top: 10px;
+    width: 100%;
+    table-layout: fixed;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+th {
+    padding: 10px; 
+    display: table-cell;
+    vertical-align: inherit;
+}
 
 
    

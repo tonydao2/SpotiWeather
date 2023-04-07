@@ -27,7 +27,7 @@ def SpotifyLogin():
       auth_url = sp_oauth.get_authorize_url()
       return redirect(auth_url)
 
-@app.route("/logout", methods=['POST'])
+@app.route("/logout")
 def SpotifyLogout():
       session.clear()
       return render_template('home.html', message="You have been logged out.")

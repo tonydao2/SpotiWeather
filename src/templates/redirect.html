@@ -3,7 +3,6 @@
     <head>
         <title>Main</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-
     </head>
 
     <body>
@@ -12,16 +11,28 @@
         {% endif %}
 
         <h1 class="InfoHeader">This is your playlist for today</h1>
-         
+        
         <div class="container">
-               <form method="POST", action="/refresh">
-                    <button>Refresh if you do not like the playlist</button>
-                </form>
-        </div>
+            <button class="Button_Wrapper">Add playlist to spotify</button>
+            <form method="POST", action="/refresh">
+                <button>Refresh the song choices</button>
+            </form>
+       </div>
+
+        <table style="align-items: center;">
+            <thread>
+                <tr>
+                    <th>Track</th>
+                    <th>Artist</th>
+                    <th>Time</th>
+                </tr>
+            </thread>
+
+
+        </table>
+
 
         <div class="login-card">
-
-
              {% if(weatherResponse) %}
                  <h1> {{cityName}}</h1>
                  <h2> {{temp}} °F</h2>
@@ -29,16 +40,17 @@
                  {% else %}
                      <h2>Weather App</h2>
                  <h3>Enter a city</h3>
-                 {% endif %}
-         
-         
+             {% endif %}
          </div>
 
         <form method="POST", action="/logout">
         <ul>
-            <li class="Logout">Log out</li>
+            <li class="Logout"><a href="/logout">Log out</a></li>
         </ul>
+        </form>
 
 
          
     </body>
+
+</html>
