@@ -3,7 +3,6 @@
     <head>
         <title>Main</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-
     </head>
 
     <body>
@@ -34,8 +33,6 @@
 
 
         <div class="login-card">
-
-
              {% if(weatherResponse) %}
                  <h1> {{cityName}}</h1>
                  <h2> {{temp}} °F</h2>
@@ -43,9 +40,7 @@
                  {% else %}
                      <h2>Weather App</h2>
                  <h3>Enter a city</h3>
-                 {% endif %}
-         
-         
+             {% endif %}
          </div>
 
         <form method="POST", action="/logout">
@@ -57,3 +52,5 @@
 
          
     </body>
+
+</html>
