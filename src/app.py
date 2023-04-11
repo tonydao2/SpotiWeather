@@ -45,7 +45,6 @@ def SpotifyLogout():
 
 
 
-
 def create_spotify_oauth():
     return SpotifyOAuth(
             client_id=secrets["client_id"],
@@ -72,9 +71,13 @@ def getLocation():
 
 def getUserName():
     headers = {'Authorization': 'Bearer {token}'.format(token=session.get('acess_token'))}
-    r = requests.get(BASE_URL + 'me', headers=headers)
-    r=r.json()
-    return 'user' #r['display_name']
+    try: 
+        r = requests.get(BASE_URL + 'me', headers=headers)
+        r.raise_for_status()
+        r=r.json()
+        return r['display_name']
+    except requests.exceptions.RequestException as e:
+         return "User"
 
 def getLikedSongs():
     headers = {'Authorization': 'Bearer {token}'.format(token=session.get('acess_token'))}
