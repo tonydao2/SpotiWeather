@@ -111,9 +111,11 @@ def getPlaylist():
     headers = {'Authorization': 'Bearer {token}'.format(token=token_info['access_token'])}
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
-    trackList = userTopTracksSeeds(headers)
-    
-    print(getRecsClear(trackList, genreList, trackList, headers))
+    artistList = userTopArtistSeeds(headers)
+    print(trackList)
+    print(genreList)
+    print(artistList)
+    print(getRecsClear(trackList, genreList, artistList, headers))
 
     username=getUserName(headers)
     return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
@@ -152,17 +154,19 @@ def getLikedSongs():
 
 def userTopArtistSeeds(headers):
     artistList=[]
-    limit = '5'
+    limit = '10'
     timeRange ="short_term"
     r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
     r=r.json()
     for artists in r['items']:
          artistList.append(artists['id'])
-    return artistList
+
+    randomArtists= (random.choices(artistList, k=2))
+    return ','.join(randomArtists)
 
 def userTopGenreSeeds(headers):
     genres=[]
-    limit = '5'
+    limit = '10'
     timeRange ="medium_term"
     r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
     r=r.json()
@@ -171,7 +175,8 @@ def userTopGenreSeeds(headers):
         
     flatlist=[element for sublist in genres for element in sublist]
     genreList = [*set(flatlist)]
-    return (random.choices(genreList, k=5))
+    randomGenres= (random.choices(genreList, k=1))
+    return ','.join(randomGenres)
     
 
 def userTopTracksSeeds(headers):
@@ -182,24 +187,19 @@ def userTopTracksSeeds(headers):
     r=r.json()
     for album in r['items']:
          trackList.append(album['id'])
-    return trackList
+
+    randomTracks= (random.choices(trackList, k=2))
+    return ','.join(randomTracks)
 
 def getRecsClear(trackLists, genreList, artistList, headers):
-    trackList=[]
-    params={
-    'seed_tracks': ','.join(trackLists),
-    'seed_artists': ','.join(genreList),
-    'seed_genres': ','.join(artistList),
-    'market': 'US',
-    'limit': 20
-     }
-    r=requests.get(BASE_URL + "recommendations", headers=headers, params=params)
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
-    for item in r['items']:
-         trackList.append(item['name'])
-    return trackList
-    
-
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
+   
 
 def getRecsRain():
      return 'TODO'
