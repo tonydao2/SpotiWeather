@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, jsonify,url_for,redirect, session, url_for
-import webbrowser
-import spotipy
+import webbrowser, spotipy, math
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy import Spotify
@@ -16,6 +15,8 @@ app = Flask(__name__)
 app.secret_key = "super secret key"
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 secrets = json.load(open("client_secret.json", "r"))
+if os.path.exists(".cache"):
+  os.remove(".cache")
 weatherApi = secrets["openWeather"]
 locationApi = secrets["location"]
 
@@ -110,7 +111,7 @@ def getPlaylist():
     headers = {'Authorization': 'Bearer {token}'.format(token=token_info['access_token'])}
 
     username=getUserName(headers)
-    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=result.get("main").get("temp"), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
+    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
 
 
 #function to get the access token which is needed to be passed into api requests
