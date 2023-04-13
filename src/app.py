@@ -3,7 +3,7 @@ import webbrowser, spotipy, math
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy import Spotify
-import os, requests
+import os, requests, random
 import json, time
 import requests
 
@@ -109,6 +109,11 @@ def getPlaylist():
     
     #header to be passed to spotify api requests
     headers = {'Authorization': 'Bearer {token}'.format(token=token_info['access_token'])}
+    trackList = userTopTracksSeeds(headers)
+    genreList =userTopGenreSeeds(headers)
+    trackList = userTopTracksSeeds(headers)
+    
+    print(getRecsClear(trackList, genreList, trackList, headers))
 
     username=getUserName(headers)
     return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
@@ -145,25 +150,55 @@ def getLikedSongs():
     return 'need to finish'
     #returns file containing (default 20) of the users liked songs
 
-def userTopArtistSeeds():
-   
-    limit =5
+def userTopArtistSeeds(headers):
+    artistList=[]
+    limit = '5'
     timeRange ="short_term"
-    #r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
-   # r=r.json()
-    return "todo"
+    r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
+    r=r.json()
+    for artists in r['items']:
+         artistList.append(artists['id'])
+    return artistList
 
-def userTopGenreSeeds():
-    return "todo"
+def userTopGenreSeeds(headers):
+    genres=[]
+    limit = '5'
+    timeRange ="medium_term"
+    r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
+    r=r.json()
+    for artists in r['items']:
+         genres.append((artists['genres']))
+        
+    flatlist=[element for sublist in genres for element in sublist]
+    genreList = [*set(flatlist)]
+    return (random.choices(genreList, k=5))
     
 
-def userTopTracksSeeds():
-     #need to get the top genres of a user to curate recs
-    return "todo"
+def userTopTracksSeeds(headers):
+    trackList=[]
+    limit = '5'
+    timeRange ="short_term"
+    r= requests.get(BASE_URL + "me/top/tracks?limit=" +limit + "&time_range="+timeRange, headers=headers)
+    r=r.json()
+    for album in r['items']:
+         trackList.append(album['id'])
+    return trackList
 
-def getRecsClear():
-     r=requests.get(BASE_URL + "recommendations")
-     return "need to finish"
+def getRecsClear(trackLists, genreList, artistList, headers):
+    trackList=[]
+    params={
+    'seed_tracks': ','.join(trackLists),
+    'seed_artists': ','.join(genreList),
+    'seed_genres': ','.join(artistList),
+    'market': 'US',
+    'limit': 20
+     }
+    r=requests.get(BASE_URL + "recommendations", headers=headers, params=params)
+    r=r.json()
+    for item in r['items']:
+         trackList.append(item['name'])
+    return trackList
+    
 
 
 def getRecsRain():
