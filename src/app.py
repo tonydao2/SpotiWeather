@@ -201,25 +201,62 @@ def getRecsClear(trackLists, genreList, artistList, headers):
     return ','.join(recList)
    
 
-def getRecsRain():
-     return 'TODO'
+def getRecsRain(trackLists, genreList, artistList, headers):
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
      
-def getRecsDrizzle():
-     #shower rain
-     return 'TODO'
+def getRecsDrizzle(trackLists, genreList, artistList, headers):
+    #shower rain
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
 
-def getRecsThunder():
-     return 'TODO'
+def getRecsThunder(trackLists, genreList, artistList, headers):
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
      
-def getRecsSnow():
-     return 'TODO'
+def getRecsSnow(trackLists, genreList, artistList, headers):
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
 
-def getRecsClouds():
-     #grouped together few clouds, scattered clouds, broken clouds
-     return 'TODO'
+def getRecsClouds(trackLists, genreList, artistList, headers):
+    #grouped together few clouds, scattered clouds, broken clouds
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
+     
 
-def getRecsMist():
-     return 'TODO'
+def getRecsMist(trackLists, genreList, artistList, headers):
+    recList=[]
+    limit ='20'
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=r.json()
+    for album in r['tracks']:
+         recList.append(album['name'])
+    return ','.join(recList)
 
 
 if __name__ == "__main__":
