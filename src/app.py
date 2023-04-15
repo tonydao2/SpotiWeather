@@ -113,7 +113,9 @@ def getPlaylist():
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
     artistList = userTopArtistSeeds(headers)
-
+    print(trackList)
+    print(genreList)
+    print(artistList)
     recs = getRecsClear(trackList, genreList, artistList, headers)
     
     makePlaylist(headers, recs)
@@ -156,8 +158,8 @@ def makePlaylist(headers, songRecs):
     r = f"https://api.spotify.com/v1/users/{userID}/playlists"
     request_body = json.dumps({
            "name": "SpotiWeather for " + dateFormat,
-           "description": "Weather based playlist for farting " + dateFormat,
-           "public": True
+           "description": "Weather based playlist for" + dateFormat,
+           "public": False
          })
     response = requests.post(url = r, data = request_body, headers=headers)
     playlist_id = response.json()['id']
@@ -237,7 +239,6 @@ def getRecsClear(trackLists, genreList, artistList, headers):
     r=r.json()
     for album in r['tracks']:
         recList.append(album['id'])
-
     return recList
    
 
