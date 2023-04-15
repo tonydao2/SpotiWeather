@@ -5,6 +5,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy import Spotify
 import os, requests, random
 import json, time
+from datetime import date
 import requests
 
 app = Flask(__name__)
@@ -112,11 +113,10 @@ def getPlaylist():
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
     artistList = userTopArtistSeeds(headers)
-    print(trackList)
-    print(genreList)
-    print(artistList)
-    print(getRecsClear(trackList, genreList, artistList, headers))
 
+    recs = getRecsClear(trackList, genreList, artistList, headers)
+    
+    makePlaylist(headers, recs)
     username=getUserName(headers)
     return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
 
@@ -144,6 +144,33 @@ def getUserName(headers):
     except:
          return "User!"
     
+
+@app.route("/makePlaylist")
+def makePlaylist(headers, songRecs):
+    r = requests.get(BASE_URL + 'me', headers=headers)
+    r=r.json()
+    userID= r['id']
+    today = date.today()
+    dateFormat = today.strftime("%m/%d")
+
+    r = f"https://api.spotify.com/v1/users/{userID}/playlists"
+    request_body = json.dumps({
+           "name": "SpotiWeather for " + dateFormat,
+           "description": "Weather based playlist for farting " + dateFormat,
+           "public": True
+         })
+    response = requests.post(url = r, data = request_body, headers=headers)
+    playlist_id = response.json()['id']
+    songRecs = ["spotify:track:" + s for s in songRecs]
+    songRecs=','.join(songRecs)
+    url=f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=" + songRecs
+
+    response = requests.post(url = url, headers=headers)
+
+
+    
+
+     
 
 def getLikedSongs():
 
@@ -181,7 +208,7 @@ def userTopGenreSeeds(headers):
 
 def userTopTracksSeeds(headers):
     trackList=[]
-    limit = '5'
+    limit = '10'
     timeRange ="short_term"
     r= requests.get(BASE_URL + "me/top/tracks?limit=" +limit + "&time_range="+timeRange, headers=headers)
     r=r.json()
@@ -191,14 +218,27 @@ def userTopTracksSeeds(headers):
     randomTracks= (random.choices(trackList, k=2))
     return ','.join(randomTracks)
 
+#takes in the list of song ids and will return an array of their names
+def getTrackName(recList, headers):
+     recList = ','.join(recList)
+     recNames=[]
+     r= requests.get(BASE_URL + "tracks?ids=" + recList, headers=headers)
+     r=r.json()
+     for album in r['tracks']:
+        recNames.append(album['name'])
+     print(recNames)
+     return recNames
+     
+#returns a string list of track ids for recs
 def getRecsClear(trackLists, genreList, artistList, headers):
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
-    return ','.join(recList)
+        recList.append(album['id'])
+
+    return recList
    
 
 def getRecsRain():
