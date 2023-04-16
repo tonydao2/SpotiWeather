@@ -29,7 +29,11 @@
                         </tr>
                     {% endfor %}
                     <th>Artist</th>
-                    <th>Time</th>
+                    {% for rec in recsArtist %}
+                         <tr>
+                            <td>{{rec}}</td>
+                        </tr>
+                    {% endfor %}
                 </tr>
             </thread>
 

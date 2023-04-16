@@ -118,9 +118,9 @@ def getPlaylist():
     print(artistList)
     recs = getRecsClear(trackList, genreList, artistList, headers)
     
-    # makePlaylist(headers, recs) # Can call this in the POST method have to figure how to
+    makePlaylist(headers, recs) # Can call this in the POST method have to figure how to
     username=getUserName(headers)
-    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = getTrackName(recs,headers))
+    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = getTrackName(recs,headers), recsArtist = getTrackArtist(recs, headers))
 
 
 #function to get the access token which is needed to be passed into api requests
@@ -230,6 +230,15 @@ def getTrackName(recList, headers):
         recNames.append(album['name'])
      print(recNames)
      return recNames
+
+def getTrackArtist(recList, headers):
+        recList = ','.join(recList)
+        recArtist=[]
+        r= requests.get(BASE_URL + "tracks?ids=" + recList, headers=headers)
+        r=r.json()
+        for artists in r['tracks']:
+            recArtist.append(artists['artists'][0]['name'])
+        return recArtist
      
 #returns a string list of track ids for recs
 def getRecsClear(trackLists, genreList, artistList, headers):
