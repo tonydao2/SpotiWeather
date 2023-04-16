@@ -118,7 +118,7 @@ def getPlaylist():
     print(artistList)
     recs = getRecsClear(trackList, genreList, artistList, headers)
     
-    makePlaylist(headers, recs) # Can call this in the POST method have to figure how to
+    # makePlaylist(headers, recs)
     username=getUserName(headers)
     return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = getTrackName(recs,headers), recsArtist = getTrackArtist(recs, headers))
 
@@ -239,6 +239,13 @@ def getTrackArtist(recList, headers):
         for artists in r['tracks']:
             recArtist.append(artists['artists'][0]['name'])
         return recArtist
+
+def getTrackDict(recs, headers):
+    recsDict={}
+    for i in range(0, len(getTrackName(recs, headers))):
+        recsDict[getTrackName(recs, headers)[i]] = getTrackArtist(recs, headers)[i]
+    return recsDict
+
      
 #returns a string list of track ids for recs
 def getRecsClear(trackLists, genreList, artistList, headers):
