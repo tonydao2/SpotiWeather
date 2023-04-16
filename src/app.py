@@ -118,9 +118,9 @@ def getPlaylist():
     print(artistList)
     recs = getRecsClear(trackList, genreList, artistList, headers)
     
-    makePlaylist(headers, recs)
+    # makePlaylist(headers, recs) # Can call this in the POST method have to figure how to
     username=getUserName(headers)
-    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"))
+    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = getTrackName(recs,headers))
 
 
 #function to get the access token which is needed to be passed into api requests
@@ -248,7 +248,7 @@ def getRecsRain(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
      
 def getRecsDrizzle(trackLists, genreList, artistList, headers):
@@ -258,7 +258,7 @@ def getRecsDrizzle(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
 
 def getRecsThunder(trackLists, genreList, artistList, headers):
@@ -267,7 +267,7 @@ def getRecsThunder(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
      
 def getRecsSnow(trackLists, genreList, artistList, headers):
@@ -276,7 +276,7 @@ def getRecsSnow(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
 
 def getRecsClouds(trackLists, genreList, artistList, headers):
@@ -286,7 +286,7 @@ def getRecsClouds(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
      
 
@@ -296,7 +296,7 @@ def getRecsMist(trackLists, genreList, artistList, headers):
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['name'])
+         recList.append(album['id'])
     return ','.join(recList)
 
 

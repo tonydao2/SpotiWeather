@@ -23,7 +23,11 @@
             <thread>
                 <tr>
                     <th>Track</th>
-                    <h2>{{recs}}</h2>
+                    {% for rec in recsName %}
+                         <tr>
+                            <td>{{rec}}</td>
+                        </tr>
+                    {% endfor %}
                     <th>Artist</th>
                     <th>Time</th>
                 </tr>
