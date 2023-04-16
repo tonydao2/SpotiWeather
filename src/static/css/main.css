@@ -98,9 +98,6 @@ ul {
     width: 98%;
 }
   
-li:hover {
-    cursor: pointer;
-}
 
 .ul1 {
     display: inline-block;
@@ -130,6 +127,7 @@ li:hover {
 
 .listContainer {
     display: flex;
+    text-align: center;
 }
 
 
