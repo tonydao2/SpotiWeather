@@ -13,13 +13,18 @@
         <h1 class="InfoHeader">This is your playlist for today</h1>
         
         <div class="container">
-            <button class="Button_Wrapper">Add playlist to spotify</button>
-            <form method="POST", action="/refresh">
-                <button>Refresh the song choices</button>
+            <form action="/makePlaylist">
+      
+                    <button>Add playlist to Spotify</button>
+                </form>
+               
             </form>
+            
+            <button onClick="window.location.reload();">Refresh song choices</button>
+            
        </div>
 
-       
+
     
 
 
