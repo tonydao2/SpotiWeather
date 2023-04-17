@@ -110,17 +110,38 @@ def getPlaylist():
     
     #header to be passed to spotify api requests
     headers = {'Authorization': 'Bearer {token}'.format(token=token_info['access_token'])}
+    session['headers']=headers
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
     artistList = userTopArtistSeeds(headers)
     print(trackList)
     print(genreList)
     print(artistList)
-    recs = getRecsClear(trackList, genreList, artistList, headers)
+    print(weatherCondition)
+    if weatherCondition=="clear":
+        recs = getRecsClear(trackList, genreList, artistList, headers)
+    elif weatherCondition =="rain":
+         recs = getRecsRain(trackList, genreList, artistList, headers)
+    elif weatherCondition =="drizzle":
+         recs = getRecsDrizzle(trackList, genreList, artistList, headers)
+    elif weatherCondition == "thunder":
+         recs = getRecsThunder(trackList, genreList, artistList, headers)
+    elif weatherCondition =="few clouds" or weatherCondition =="scattered clouds" or weatherCondition =="broken clouds":
+         recs = getRecsClouds(trackList, genreList, artistList, headers)
+    elif weatherCondition == "mist":
+         recs = getRecsMist(trackList, genreList, artistList, headers)
+    elif weatherCondition == "snow":
+         recs = getRecsSnow(trackList, genreList, artistList, headers)
+    else: 
+         recs = getRecsClear(trackList, genreList, artistList, headers)
+
+    session['recs']=recs
     
-    # makePlaylist(headers, recs)
     username=getUserName(headers)
-    return render_template('redirect.html', name=username , weatherResponse=True, cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = getTrackName(recs,headers), recsArtist = getTrackArtist(recs, headers))
+    return render_template('redirect.html', name=username , weatherResponse=True, 
+    cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), 
+    description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), 
+    recsName = getTrackName(recs,headers), recsArtist = getTrackArtist(recs, headers), recList=recs, headers=headers)
 
 
 #function to get the access token which is needed to be passed into api requests
@@ -148,7 +169,9 @@ def getUserName(headers):
     
 
 @app.route("/makePlaylist")
-def makePlaylist(headers, songRecs):
+def makePlaylist():
+    headers = session.get("headers")
+    songRecs = session.get("recs")
     r = requests.get(BASE_URL + 'me', headers=headers)
     r=r.json()
     userID= r['id']
@@ -168,6 +191,7 @@ def makePlaylist(headers, songRecs):
     url=f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=" + songRecs
 
     response = requests.post(url = url, headers=headers)
+    return render_template("final.html")
 
 
     
@@ -249,6 +273,7 @@ def getTrackDict(recs, headers):
      
 #returns a string list of track ids for recs
 def getRecsClear(trackLists, genreList, artistList, headers):
+    print("clear weather")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
@@ -259,61 +284,67 @@ def getRecsClear(trackLists, genreList, artistList, headers):
    
 
 def getRecsRain(trackLists, genreList, artistList, headers):
+    print('raining')
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
      
 def getRecsDrizzle(trackLists, genreList, artistList, headers):
+    print("drizzling")
     #shower rain
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
 
 def getRecsThunder(trackLists, genreList, artistList, headers):
+    print("thundering")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
      
 def getRecsSnow(trackLists, genreList, artistList, headers):
+    print("snowing")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
 
 def getRecsClouds(trackLists, genreList, artistList, headers):
     #grouped together few clouds, scattered clouds, broken clouds
+    print("cloudy")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
      
 
 def getRecsMist(trackLists, genreList, artistList, headers):
+    print("misty")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-         recList.append(album['id'])
-    return ','.join(recList)
+        recList.append(album['id'])
+    return recList
 
 
 if __name__ == "__main__":
