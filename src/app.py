@@ -114,6 +114,9 @@ def getPlaylist():
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
     artistList = userTopArtistSeeds(headers)
+    winterTracks = ','.join(random.choices(["0bYg9bo50gSsH3LtXe2SQn", "0lizgQ7Qw35od7CYaoMBZb", "2uFaJJtFpPDc5Pa95XzTvg", "7uoFMmxln0GPXQ0AcCBXRq", "2L9QLAhrvtP4EYg1lY0Tnw", "5PuKlCjfEVIXl0ZBp5ZW9g", "65irrLqfCMRiO3p87P4C0D", "5Q2P43CJra0uRAogjHyJDK", "0qcr5FMsEO85NAQjrlDRKo", "1jhljxXlHw8K9rezXKrnow", "2QjOHCTQ1Jl3zawyYOpxh6"], k=2))
+    winterGenres = "Christmas"
+
     print(trackList)
     print(genreList)
     print(artistList)
@@ -131,7 +134,7 @@ def getPlaylist():
     elif weatherCondition == "mist":
          recs = getRecsMist(trackList, genreList, artistList, headers)
     elif weatherCondition == "snow":
-         recs = getRecsSnow(trackList, genreList, artistList, headers)
+         recs = getRecsSnow(winterTracks, winterGenres, artistList, headers)
     else: 
          recs = getRecsClear(trackList, genreList, artistList, headers)
 
@@ -208,7 +211,7 @@ def getLikedSongs():
 def userTopArtistSeeds(headers):
     artistList=[]
     limit = '10'
-    timeRange ="short_term"
+    timeRange ="long_term"
     r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
     r=r.json()
     for artists in r['items']:
@@ -276,7 +279,7 @@ def getRecsClear(trackLists, genreList, artistList, headers):
     print("clear weather")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&max_danceability=" + '0.8' + "&min_energy=" + '0.6' + "&min_tempo=" + '120' + "&min_valence=" + '0.6' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
         recList.append(album['id'])
@@ -287,10 +290,10 @@ def getRecsRain(trackLists, genreList, artistList, headers):
     print('raining')
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_valence=" + '0.4' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
      
 def getRecsDrizzle(trackLists, genreList, artistList, headers):
@@ -298,30 +301,30 @@ def getRecsDrizzle(trackLists, genreList, artistList, headers):
     #shower rain
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=" + '0.8' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
 
 def getRecsThunder(trackLists, genreList, artistList, headers):
     print("thundering")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&min_energy=" + '0.7' + "&min_tempo=" + '130' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
      
-def getRecsSnow(trackLists, genreList, artistList, headers):
+def getRecsSnow(winterTracks, winterGenres, artistList, headers):
     print("snowing")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + winterTracks + "&seed_artists=" + artistList + "&seed_genres=" + winterGenres + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
 
 def getRecsClouds(trackLists, genreList, artistList, headers):
@@ -329,10 +332,10 @@ def getRecsClouds(trackLists, genreList, artistList, headers):
     print("cloudy")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.5' + "&max_danceability=" + '0.8' + "&min_energy=" + '0.6' + "&min_tempo=" + '100' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
      
 
@@ -340,10 +343,10 @@ def getRecsMist(trackLists, genreList, artistList, headers):
     print("misty")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=" + '0.8' + "&min_danceability=" + '0.5' + "&max_danceability=" + '0.8' + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
-        recList.append(album['id'])
+         recList.append(album['id'])
     return recList
 
 
