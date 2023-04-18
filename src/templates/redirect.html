@@ -10,17 +10,20 @@
             <h1 class="TitleHeader">Welcome to SpotiWeather {{name}}!</h1>
         {% endif %}
 
+        {% if message %}
+            <h1 class="InfoHeader">{{message}}</h1>
+        {% endif %}
+
         <h1 class="InfoHeader">This is your playlist for today</h1>
         
         <div class="container">
             <form action="/makePlaylist">
-      
                     <button>Add playlist to Spotify</button>
-                </form>
-               
             </form>
             
-            <button onClick="window.location.reload();">Refresh song choices</button>
+            <form action="/getPlaylist">
+                <button>Refresh song choices</button>
+             </form>
             
        </div>
 
@@ -29,7 +32,7 @@
 
 
         <div class="login-card">
-             {% if(weatherResponse) %}
+             {% if weatherResponse %}
                  <h1> {{cityName}}</h1>
                  <h2> {{temp}} °F</h2>
                  <h3> {{description}} and humidity {{h}}% </h3>

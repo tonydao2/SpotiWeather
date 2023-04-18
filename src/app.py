@@ -101,6 +101,7 @@ def getPlaylist():
     cityName = getLocation()
     result = weatherSearch(cityName)
     weatherCondition = result.get("weather")[0].get("description")
+    session['result'] = result
 
     try: 
         token_info=get_access_token()
@@ -117,10 +118,11 @@ def getPlaylist():
     winterTracks = ','.join(random.choices(["0bYg9bo50gSsH3LtXe2SQn", "0lizgQ7Qw35od7CYaoMBZb", "2uFaJJtFpPDc5Pa95XzTvg", "7uoFMmxln0GPXQ0AcCBXRq", "2L9QLAhrvtP4EYg1lY0Tnw", "5PuKlCjfEVIXl0ZBp5ZW9g", "65irrLqfCMRiO3p87P4C0D", "5Q2P43CJra0uRAogjHyJDK", "0qcr5FMsEO85NAQjrlDRKo", "1jhljxXlHw8K9rezXKrnow", "2QjOHCTQ1Jl3zawyYOpxh6"], k=2))
     winterGenres = "Christmas"
 
-    print(trackList)
-    print(genreList)
-    print(artistList)
-    print(weatherCondition)
+    # print(trackList)
+    # print(genreList)
+    # print(artistList)
+    # print(weatherCondition)
+
     if weatherCondition=="clear":
         recs = getRecsClear(trackList, genreList, artistList, headers)
     elif weatherCondition =="rain":
@@ -139,12 +141,18 @@ def getPlaylist():
          recs = getRecsClear(trackList, genreList, artistList, headers)
 
     session['recs']=recs
-    
+    recsName = getTrackName(recs,headers)
+    session['recsName']=recsName
+    recsArtist = getTrackArtist(recs, headers)
+    session['recsArtist']=recsArtist
+
     username=getUserName(headers)
+    session['username']=username
+
     return render_template('redirect.html', name=username , weatherResponse=True, 
     cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), 
-    description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), 
-    recsName = getTrackName(recs,headers), recsArtist = getTrackArtist(recs, headers), recList=recs, headers=headers)
+    description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = recsName, recsArtist = recsArtist, 
+    recList=recs, headers=headers)
 
 
 #function to get the access token which is needed to be passed into api requests
@@ -173,6 +181,10 @@ def getUserName(headers):
 
 @app.route("/makePlaylist")
 def makePlaylist():
+    username = session.get("username")
+    recsName = session.get("recsName")
+    recsArtist = session.get("recsArtist")
+    result = session.get("result")
     headers = session.get("headers")
     songRecs = session.get("recs")
     r = requests.get(BASE_URL + 'me', headers=headers)
@@ -194,7 +206,10 @@ def makePlaylist():
     url=f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=" + songRecs
 
     response = requests.post(url = url, headers=headers)
-    return render_template("final.html")
+    return render_template('redirect.html', weatherResponse=True, 
+    cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), name=username,
+    description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = recsName, recsArtist = recsArtist,
+    recList=songRecs, headers=headers, message='Playlist Created!')
 
 
     
@@ -255,7 +270,6 @@ def getTrackName(recList, headers):
      r=r.json()
      for album in r['tracks']:
         recNames.append(album['name'])
-     print(recNames)
      return recNames
 
 def getTrackArtist(recList, headers):
