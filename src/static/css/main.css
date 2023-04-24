@@ -20,12 +20,13 @@ body {
     font-size: 32px;
     font-weight: 500;
     margin: 0 0 10px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 .login-card > h2 {
-    font-size: 32px;
+    font-size: 25px;
     font-weight: 500;
-    margin: 0 0 10px;
+    margin: 10px 0 10px;
 }
 
 .login-card > h3 {
@@ -51,9 +52,9 @@ body {
     font-weight: 500;
     margin-top: 30px;
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
     color: #112e2b;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 
@@ -116,6 +117,7 @@ ul {
 .li1 {
     font-weight: 500;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 5px 0 5px;
 }
 
 .listContainer {
