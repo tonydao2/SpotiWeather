@@ -18,30 +18,28 @@ def setUp_database():
 def create_database():
     conn = sqlite3.connect('src/database.db')
     c = conn.cursor()
-    c.execute("""
+    c.execute('''
         CREATE TABLE playlists (
-            playlist_id int AUTO_INCREMENT,
-            date NOT NULL,
+            playlist_id int 
+            date date NOT NULL,
             PRIMARY KEY (playlist_id)
-            )""")
-    conn.commit()
-    c.execute("""
+            ) ''')
+    c.execute('''
         CREATE TABLE playlist_songs (
             song_id int AUTO_INCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (song_id),
-            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
-            )""")
-    conn.commit()
-    c.execute("""
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
+            )''')
+    c.execute('''
         CREATE TABLE playlist_artists (
             artist_id int AUTO_INCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (artist_id),
-            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
-            )""")
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
+            )''')
     conn.commit()
     conn.close()
 
@@ -76,6 +74,13 @@ setUp_database()
 conn = sqlite3.connect('src/database.db', check_same_thread=False)
 cursor = conn.cursor()
 
+def add_database(name, artist, playlist_id, date):
+    cursor.execute("INSERT INTO playlists (playlist_id, date) VALUES ('{0}', '{1}')".format(playlist_id, date))
+    playlist_id = cursor.lastrowid
+
+    for song in len(name):
+        cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES ('{0}', '{1}')".format(playlist, song))
+        conn.commit()
 
 
 # Default page
@@ -175,11 +180,6 @@ def getPlaylist():
     atmosphereList = ['mist', 'smoke', 'haze', 'sand whirls', 'dust whirls', 'dust', 'sand', 'volcanic ash', 'fog', 'squalls', 'tornado']
     snowList = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
     
-    print(trackList)
-    print(genreList)
-    print(artistList)
-    print(weatherCondition)
-
     #compare weather conditions to what is in list to know which rec function to call
     if weatherCondition in clearList:
         recs = getRecsClear(trackList, genreList, artistList, headers)
@@ -264,6 +264,10 @@ def makePlaylist():
          })
     response = requests.post(url = r, data = request_body, headers=headers)
     playlist_id = response.json()['id']
+    
+
+    # Add info to database
+    add_database(recsName, recsArtist, playlist_id, today)
 
     #need to add spotify:track: to all of the song ids
     songRecs = ["spotify:track:" + s for s in songRecs]
