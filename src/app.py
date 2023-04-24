@@ -15,24 +15,19 @@ def setUp_database():
     if not os.path.isfile('src/database.db'):
         create_database()
 
-
-setUp_database()
-conn = sqlite3.connect('src/database.db', check_same_thread=False)
-cursor = conn.cursor()
-
 def create_database():
     conn = sqlite3.connect('src/database.db')
     c = conn.cursor()
     c.execute("""
         CREATE TABLE playlists (
-            playlist_id int AUTOINCREMENT,
+            playlist_id int AUTO_INCREMENT,
             date NOT NULL,
-            PRIMARY KEY (id)
+            PRIMARY KEY (playlist_id)
             )""")
     conn.commit()
     c.execute("""
         CREATE TABLE playlist_songs (
-            song_id int AUTOINCREMENT,
+            song_id int AUTO_INCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (song_id),
@@ -41,7 +36,7 @@ def create_database():
     conn.commit()
     c.execute("""
         CREATE TABLE playlist_artists (
-            artist_id int AUTOINCREMENT,
+            artist_id int AUTO_INCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (artist_id),
@@ -49,6 +44,10 @@ def create_database():
             )""")
     conn.commit()
     conn.close()
+
+setUp_database()
+conn = sqlite3.connect('src/database.db', check_same_thread=False)
+cursor = conn.cursor()
 
 # OAuth
 app.secret_key = "super secret key"
