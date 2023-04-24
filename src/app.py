@@ -7,10 +7,48 @@ import os, requests, random
 import json, time
 from datetime import date
 import requests
+import sqlite3
 
 app = Flask(__name__)
 
+def setUp_database():
+    if not os.path.isfile('src/database.db'):
+        create_database()
 
+
+setUp_database()
+conn = sqlite3.connect('src/database.db', check_same_thread=False)
+cursor = conn.cursor()
+
+def create_database():
+    conn = sqlite3.connect('src/database.db')
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE playlists (
+            playlist_id int AUTOINCREMENT,
+            date NOT NULL,
+            PRIMARY KEY (id)
+            )""")
+    conn.commit()
+    c.execute("""
+        CREATE TABLE playlist_songs (
+            song_id int AUTOINCREMENT,
+            playlist_id int,
+            name varchar(255),
+            PRIMARY KEY (song_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
+            )""")
+    conn.commit()
+    c.execute("""
+        CREATE TABLE playlist_artists (
+            artist_id int AUTOINCREMENT,
+            playlist_id int,
+            name varchar(255),
+            PRIMARY KEY (artist_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
+            )""")
+    conn.commit()
+    conn.close()
 
 # OAuth
 app.secret_key = "super secret key"
@@ -34,6 +72,10 @@ client_id=secrets["client_id"]
 client_secret=secrets["client_secret"]
 TOKEN_INFO='token_info'
 
+
+setUp_database()
+conn = sqlite3.connect('src/database.db', check_same_thread=False)
+cursor = conn.cursor()
 
 
 
@@ -307,14 +349,6 @@ def getTrackArtist(recList, headers):
             recArtist.append(artists['artists'][0]['name'])
         return recArtist
 
-#makes a dictionary of the song name and artists
-def getTrackDict(recs, headers):
-    recsDict={}
-    for i in range(0, len(getTrackName(recs, headers))):
-        recsDict[getTrackName(recs, headers)[i]] = getTrackArtist(recs, headers)[i]
-    return recsDict
-
-     
 #returns a string list of track ids for recs for a clear day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsClear(trackLists, genreList, artistList, headers):
     print("clear weather")
