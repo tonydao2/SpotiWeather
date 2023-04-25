@@ -20,13 +20,13 @@ def create_database():
     c = conn.cursor()
     c.execute('''
         CREATE TABLE playlists (
-            playlist_id int 
-            date date NOT NULL,
+            playlist_id int,
+            date_column DATE,
             PRIMARY KEY (playlist_id)
-            ) ''')
+            )''')
     c.execute('''
         CREATE TABLE playlist_songs (
-            song_id int AUTO_INCREMENT,
+            song_id int AUTOINCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (song_id),
@@ -34,7 +34,7 @@ def create_database():
             )''')
     c.execute('''
         CREATE TABLE playlist_artists (
-            artist_id int AUTO_INCREMENT,
+            artist_id int AUTOINCREMENT,
             playlist_id int,
             name varchar(255),
             PRIMARY KEY (artist_id),
@@ -46,6 +46,20 @@ def create_database():
 setUp_database()
 conn = sqlite3.connect('src/database.db', check_same_thread=False)
 cursor = conn.cursor()
+
+def add_database(name, artist, playlist_id, date):
+    conn = sqlite3.connect('src/database.db', check_same_thread=False)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO playlists (playlist_id, date_column) VALUES (?, ?)", (playlist_id, date))
+
+    for song in range(len(name)):
+        cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES (?, ?)", (name[song], playlist_id ))
+
+        cursor.execute("INSERT INTO playlist_artists (name, playlist_id) VALUES (?, ?)", (artist[song], playlist_id ))
+
+
+    conn.commit()
+    conn.close()
 
 # OAuth
 app.secret_key = "super secret key"
@@ -68,19 +82,6 @@ scope = ["user-read-private", "user-read-email", 'playlist-modify-public',
 client_id=secrets["client_id"]
 client_secret=secrets["client_secret"]
 TOKEN_INFO='token_info'
-
-
-setUp_database()
-conn = sqlite3.connect('src/database.db', check_same_thread=False)
-cursor = conn.cursor()
-
-def add_database(name, artist, playlist_id, date):
-    cursor.execute("INSERT INTO playlists (playlist_id, date) VALUES ('{0}', '{1}')".format(playlist_id, date))
-    playlist_id = cursor.lastrowid
-
-    for song in len(name):
-        cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES ('{0}', '{1}')".format(playlist, song))
-        conn.commit()
 
 
 # Default page
