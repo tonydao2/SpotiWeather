@@ -61,6 +61,10 @@ def add_database(name, artist, playlist_id, date):
     conn.commit()
     conn.close()
 
+@app.route("/oldPlaylist")
+def oldPlaylist():
+    return render_template('oldPlaylist.html')
+
 # OAuth
 app.secret_key = "super secret key"
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'

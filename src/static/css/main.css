@@ -84,30 +84,44 @@ button:hover {
     background-color: rgb(26, 172, 75);
 }
 
-.Logout {
-    color: rgb(245, 125, 171);
-    float: right;
-    padding: 10px 0;
-    transition: 0.4s;
-    font-weight: 800;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+a {
+    color: black;
+    text-decoration: none;
+    transition: 0.2s ease-in-out;
+}
+  
+a:hover {
+    color: #004466; /* Change the text color on hover */
+    text-decoration: underline; /* Add an underline on hover */
 }
 
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
 }
 
 ul {
     position: absolute;
     top: 0;
-    width: 98%;
+}
+
+.logout-container {
+    display: flex;
+    position: absolute;
+    justify-content: space-between;
+    top: 0;
+    margin: 0;
+    padding: 0;
+ }
+  
+.logout-item {
+    margin-right: 10px; /* Adds a bit of space between the two items */
 }
   
 
 .ul1 {
+    width: 98%;
     font-style: italic;
     position: relative;
     font-weight: 800;

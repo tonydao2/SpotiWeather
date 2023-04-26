@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Old playlist</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+
+    <body>
+        <h1 class="TitleHeader">These are your old playlists</h1>
+
+
+      
+        <div class="navbar">
+            <div class="logout-container">
+                    <div class="logout-item">
+                            <a href="/getPlaylist">Back to main page</a></li>
+                    </div>
+                    
+
+                    <form method="POST", action="/logout">
+                        <div class="logout-item">
+                            <a href="/logout">Log out</a></li>
+                        </div>
+                    </form>
+            </div>
+        </div>
+
+    <!-- <div class="listContainer">
+        <ul class="ul1">
+            Songs   
+            {% for song in recsName%}
+                <li class="li1">{{song}}</li>
+            {% endfor %}
+        </ul>
+
+        <ul class="ul1">
+            Artists   
+            {% for song in recsArtist%}
+                <li class="li1">{{song}}</li>
+            {% endfor %}
+        </ul>
+    </div> -->
+
+
+         
+    </body>
+
+</html>
