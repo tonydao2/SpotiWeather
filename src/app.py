@@ -20,26 +20,27 @@ def create_database():
     c = conn.cursor()
     c.execute('''
         CREATE TABLE playlists (
-            playlist_id int,
+            playlist_id varchar(255),
             date_column DATE,
             PRIMARY KEY (playlist_id)
             )''')
+    
     c.execute('''
         CREATE TABLE playlist_songs (
-            song_id int AUTOINCREMENT,
-            playlist_id int,
+            song_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            playlist_id varchar(255),
             name varchar(255),
-            PRIMARY KEY (song_id),
             FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
             )''')
+    
     c.execute('''
         CREATE TABLE playlist_artists (
-            artist_id int AUTOINCREMENT,
-            playlist_id int,
+            artist_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            playlist_id varchar(255),
             name varchar(255),
-            PRIMARY KEY (artist_id),
             FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
             )''')
+    
     conn.commit()
     conn.close()
 
@@ -57,13 +58,24 @@ def add_database(name, artist, playlist_id, date):
 
         cursor.execute("INSERT INTO playlist_artists (name, playlist_id) VALUES (?, ?)", (artist[song], playlist_id ))
 
-
     conn.commit()
-    conn.close()
 
-@app.route("/oldPlaylist")
+@app.route("/oldPlaylist" , methods=['GET', 'POST'])
 def oldPlaylist():
-    return render_template('oldPlaylist.html')
+    if request.method == 'POST':
+        playlist_id = request.form.get('playlist_id')
+        cursor.execute("SELECT name FROM playlist_songs WHERE playlist_id = '{0}'".format(playlist_id))
+        songs = cursor.fetchall()
+        cursor.execute("SELECT name FROM playlist_artists WHERE playlist_id = '{0}'".format(playlist_id))
+        artist = cursor.fetchall()
+        print(songs)
+        print(artist)
+
+        return render_template('oldPlaylist.html', songs=songs, artist=artist, message="Here is your old playlist")
+    else:
+        cursor.execute("SELECT date_column, playlist_id FROM playlists") # Shows all previous albums to choose from
+        playlists = cursor.fetchall()
+        return render_template('oldPlaylist.html', playlists=playlists, message="These are your old playlists")
 
 # OAuth
 app.secret_key = "super secret key"

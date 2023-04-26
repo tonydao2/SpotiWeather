@@ -6,40 +6,66 @@
     </head>
 
     <body>
-        <h1 class="TitleHeader">These are your old playlists</h1>
+        {% if message %}
+            <h1 class="TitleHeader">{{message}}</h1>
+        {% endif%}
 
-
-      
         <div class="navbar">
             <div class="logout-container">
-                    <div class="logout-item">
-                            <a href="/getPlaylist">Back to main page</a></li>
-                    </div>
-                    
-
                     <form method="POST", action="/logout">
                         <div class="logout-item">
                             <a href="/logout">Log out</a></li>
                         </div>
                     </form>
+
+                    <div class="logout-item">
+                            <a href="/getPlaylist">Back to main page</a></li>
+                    </div>
+                    
+
+                    
+                    
+                    <div class="logout-item">
+                        <a href="/oldPlaylist">Back to old playlist</a></li>
+                    </div>
+
+
             </div>
         </div>
 
-    <!-- <div class="listContainer">
-        <ul class="ul1">
-            Songs   
-            {% for song in recsName%}
-                <li class="li1">{{song}}</li>
-            {% endfor %}
-        </ul>
+        {% if playlists %}
+            <div class="listContainer">
+                <ul class="ul1">
+                    Choose from your past playlists to see the song
+                    {% for playlist in playlists %}
+                        <form method="POST", action="/oldPlaylist">
+                            <li class="li1" onclick="this.parentNode.submit();">
+                                {{ playlist[0] }}
+                                <input type="hidden" name="playlist_id" value="{{playlist[1]}}">
+                            </li>
+                        </form>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif%}
+    
+        {% if songs %}
+            <div class="listContainer">
+                <ul class="ul1">
+                    Songs   
+                    {% for song in songs%}
+                        <li class="li1">{{song[0]}}</li>
+                    {% endfor %}
+                </ul>
 
-        <ul class="ul1">
-            Artists   
-            {% for song in recsArtist%}
-                <li class="li1">{{song}}</li>
-            {% endfor %}
-        </ul>
-    </div> -->
+                <ul class="ul1">
+                    Artists   
+                    {% for song in artist%}
+                        <li class="li1">{{song[0]}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
 
          
