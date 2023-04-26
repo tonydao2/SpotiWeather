@@ -96,7 +96,6 @@ def redirectPage():
 
 @app.route("/getPlaylist")
 def getPlaylist():
-
     #call apis to get users location and the weather at the location and store results in session variables
     cityName = getLocation()
     result = weatherSearch(cityName)
@@ -135,8 +134,11 @@ def getPlaylist():
     snowList = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
     
     print(trackList)
+    print('fart')
+    print(getTrackName(trackList.split(","),headers))
     print(genreList)
     print(artistList)
+    print()
     print(weatherCondition)
 
     #compare weather conditions to what is in list to know which rec function to call
@@ -217,11 +219,11 @@ def makePlaylist():
 
     #API Call to make playlist for user
     r = f"https://api.spotify.com/v1/users/{userID}/playlists"
-    request_body = json.dumps({
-           "name": "SpotiWeather for " + dateFormat,
-           "description": "Weather Conditions: "+ weather
-         })
-    response = requests.post(url = r, data = request_body, headers=headers)
+    request_body = {
+           "description": "Weather Condition: "+ weather ,
+           "name": "SpotiWeather for " + dateFormat
+         }
+    response = requests.post(url = r, data=json.dumps(request_body), headers=headers)
     playlist_id = response.json()['id']
 
     #need to add spotify:track: to all of the song ids
@@ -249,7 +251,7 @@ def userTopArtistSeeds(headers):
     r=r.json()
     for artists in r['items']:
          artistList.append(artists['id'])
-
+         print(artists['name'])
     randomArtists= (random.choices(artistList, k=2))
     return ','.join(randomArtists)
 
@@ -275,7 +277,7 @@ def userTopGenreSeeds(headers):
 #out of the 10, chooses 2 at random to increase variety
 def userTopTracksSeeds(headers):
     trackList=[]
-    limit = '10'
+    limit = '20'
     timeRange ="short_term"
 
     #API call to get users top tracks
@@ -353,7 +355,7 @@ def getRecsThunder(trackLists, genreList, artistList, headers):
     print("thundering")
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&min_energy=" + '0.7' + "&min_tempo=" + '130' + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&min_energy=" + '0.7' + "&min_tempo=" + '130' + "&min_loudness=" + 0.5 + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
          recList.append(album['id'])
