@@ -7,10 +7,63 @@ import os, requests, random
 import json, time
 from datetime import date
 import requests
+import sqlite3
 
 app = Flask(__name__)
 
+def setUp_database():
+    if not os.path.isfile('src/database.db'):
+        create_database()
 
+def create_database():
+    conn = sqlite3.connect('src/database.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE playlists (
+            playlist_id int,
+            date_column DATE,
+            PRIMARY KEY (playlist_id)
+            )''')
+    c.execute('''
+        CREATE TABLE playlist_songs (
+            song_id int AUTOINCREMENT,
+            playlist_id int,
+            name varchar(255),
+            PRIMARY KEY (song_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
+            )''')
+    c.execute('''
+        CREATE TABLE playlist_artists (
+            artist_id int AUTOINCREMENT,
+            playlist_id int,
+            name varchar(255),
+            PRIMARY KEY (artist_id),
+            FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
+            )''')
+    conn.commit()
+    conn.close()
+
+setUp_database()
+conn = sqlite3.connect('src/database.db', check_same_thread=False)
+cursor = conn.cursor()
+
+def add_database(name, artist, playlist_id, date):
+    conn = sqlite3.connect('src/database.db', check_same_thread=False)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO playlists (playlist_id, date_column) VALUES (?, ?)", (playlist_id, date))
+
+    for song in range(len(name)):
+        cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES (?, ?)", (name[song], playlist_id ))
+
+        cursor.execute("INSERT INTO playlist_artists (name, playlist_id) VALUES (?, ?)", (artist[song], playlist_id ))
+
+
+    conn.commit()
+    conn.close()
+
+@app.route("/oldPlaylist")
+def oldPlaylist():
+    return render_template('oldPlaylist.html')
 
 # OAuth
 app.secret_key = "super secret key"
@@ -33,8 +86,6 @@ scope = ["user-read-private", "user-read-email", 'playlist-modify-public',
 client_id=secrets["client_id"]
 client_secret=secrets["client_secret"]
 TOKEN_INFO='token_info'
-
-
 
 
 # Default page
@@ -132,8 +183,7 @@ def getPlaylist():
     cloudList = ['few clouds', 'scattered clouds' , 'broken clouds', 'overcast clouds']
     atmosphereList = ['mist', 'smoke', 'haze', 'sand whirls', 'dust whirls', 'dust', 'sand', 'volcanic ash', 'fog', 'squalls', 'tornado']
     snowList = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
-
-
+    
     #compare weather conditions to what is in list to know which rec function to call
     if weatherCondition in clearList:
         recs = getRecsClear(trackList, genreList, artistList, headers)
@@ -218,6 +268,10 @@ def makePlaylist():
          }
     response = requests.post(url = r, data=json.dumps(request_body), headers=headers)
     playlist_id = response.json()['id']
+    
+
+    # Add info to database
+    add_database(recsName, recsArtist, playlist_id, today)
 
     #need to add spotify:track: to all of the song ids
     songRecs = ["spotify:track:" + s for s in songRecs]
@@ -302,14 +356,6 @@ def getTrackArtist(recList, headers):
             recArtist.append(artists['artists'][0]['name'])
         return recArtist
 
-#makes a dictionary of the song name and artists
-def getTrackDict(recs, headers):
-    recsDict={}
-    for i in range(0, len(getTrackName(recs, headers))):
-        recsDict[getTrackName(recs, headers)[i]] = getTrackArtist(recs, headers)[i]
-    return recsDict
-
-     
 #returns a string list of track ids for recs for a clear day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsClear(trackLists, genreList, artistList, headers):
     print("clear weather")

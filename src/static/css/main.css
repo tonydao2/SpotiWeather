@@ -8,32 +8,40 @@ body {
 }
 
 .login-card {
-    position: absolute;
-    width: 40%;
-    margin: 0 20px;
+    margin-top: 0;
+    padding: 0;
+    top: 50%;
     border-radius: 1.25rem;
-    text-align: left;
-    top: 0;
-    left: 0;
+    position: relative;
+    text-align: center;
+}
+
+.login-card > h1 {
+    font-size: 32px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 .login-card > h2 {
-    font-size: 32px;
+    font-size: 25px;
     font-weight: 500;
-    margin: 0 0 30px;
+    margin: 10px 0 10px;
 }
 
 .login-card > h3 {
     font-size: 1rem;
-    font-weight: 20;
-    margin: 0 0 30px;
+    font-weight: 500;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin: 0 0 20px;
 }
 
 .TitleHeader {
     font-weight: ;
     word-wrap: normal;
     border: 0px;
-    padding: 20px;
+    padding: 0;
+    margin-bottom: 20px;
     font-weight: 800;
     text-align: center;
     font-size: 30px;
@@ -44,9 +52,9 @@ body {
     font-weight: 500;
     margin-top: 30px;
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
     color: #112e2b;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 
@@ -76,31 +84,44 @@ button:hover {
     background-color: rgb(26, 172, 75);
 }
 
-.Logout {
-    color: rgb(245, 125, 171);
-    float: right;
-    padding: 10px 0;
-    transition: 0.4s;
-    font-weight: 800;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+a {
+    color: black;
+    text-decoration: none;
+    transition: 0.2s ease-in-out;
+}
+  
+a:hover {
+    color: #004466; /* Change the text color on hover */
+    text-decoration: underline; /* Add an underline on hover */
 }
 
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
 }
 
 ul {
     position: absolute;
     top: 0;
-    width: 98%;
+}
+
+.logout-container {
+    display: flex;
+    position: absolute;
+    justify-content: space-between;
+    top: 0;
+    margin: 0;
+    padding: 0;
+ }
+  
+.logout-item {
+    margin-right: 10px; /* Adds a bit of space between the two items */
 }
   
 
 .ul1 {
-    display: inline-block;
+    width: 98%;
     font-style: italic;
     position: relative;
     font-weight: 800;
@@ -110,19 +131,7 @@ ul {
 .li1 {
     font-weight: 500;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.ul2 {
-    list-style: none;
-    display: inline-block;
-    position: relative;
-    font-weight: 800;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.li2 {
-    font-weight: 500;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 5px 0 5px;
 }
 
 .listContainer {

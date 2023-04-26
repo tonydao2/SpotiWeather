@@ -14,6 +14,17 @@
             <h1 class="InfoHeader">{{message}}</h1>
         {% endif %}
 
+        <div class="login-card">
+            {% if weatherResponse %}
+                <h1> {{cityName}}</h1>
+                <h2> {{temp}} °F</h2>
+                <h3> {{description}} and humidity {{h}}% </h3>
+                {% else %}
+                    <h2>Weather App</h2>
+                <h3>Enter a city</h3>
+            {% endif %}
+        </div>
+
         <h1 class="InfoHeader">This is your playlist for today</h1>
         
         <div class="container">
@@ -27,26 +38,21 @@
             
        </div>
 
+       <div class="navbar">
+            <div class="logout-container">
+                    <form method="POST", action="/oldPlaylist">
+                        <div class="logout-item">
+                            <a href="/oldPlaylist">Show old playlist</a></li>
+                        </div>
+                    </form>
 
-    
-
-
-        <div class="login-card">
-             {% if weatherResponse %}
-                 <h1> {{cityName}}</h1>
-                 <h2> {{temp}} °F</h2>
-                 <h3> {{description}} and humidity {{h}}% </h3>
-                 {% else %}
-                     <h2>Weather App</h2>
-                 <h3>Enter a city</h3>
-             {% endif %}
-         </div>
-
-        <form method="POST", action="/logout">
-        <ul>
-            <li class="Logout"><a href="/logout">Log out</a></li>
-        </ul>
-        </form>
+                    <form method="POST", action="/logout">
+                        <div class="logout-item">
+                            <a href="/logout">Log out</a></li>
+                        </div>
+                    </form>
+            </div>
+        </div>
 
     <div class="listContainer">
         <ul class="ul1">
@@ -56,10 +62,10 @@
             {% endfor %}
         </ul>
 
-        <ul class="ul2">
+        <ul class="ul1">
             Artists   
             {% for song in recsArtist%}
-                <li class="li2">{{song}}</li>
+                <li class="li1">{{song}}</li>
             {% endfor %}
         </ul>
     </div>
