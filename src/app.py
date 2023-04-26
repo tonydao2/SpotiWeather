@@ -132,14 +132,7 @@ def getPlaylist():
     cloudList = ['few clouds', 'scattered clouds' , 'broken clouds', 'overcast clouds']
     atmosphereList = ['mist', 'smoke', 'haze', 'sand whirls', 'dust whirls', 'dust', 'sand', 'volcanic ash', 'fog', 'squalls', 'tornado']
     snowList = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
-    
-    print(trackList)
-    print('fart')
-    print(getTrackName(trackList.split(","),headers))
-    print(genreList)
-    print(artistList)
-    print()
-    print(weatherCondition)
+
 
     #compare weather conditions to what is in list to know which rec function to call
     if weatherCondition in clearList:
