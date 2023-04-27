@@ -11,12 +11,16 @@ import sqlite3
 
 app = Flask(__name__)
 
+
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+file = os.path.join(PROJECT_PATH, 'database.db')
+
 def setUp_database():
-    if not os.path.isfile('src/database.db'):
+    if not os.path.isfile(file):
         create_database()
 
 def create_database():
-    conn = sqlite3.connect('src/database.db')
+    conn = sqlite3.connect(file)
     c = conn.cursor()
     c.execute('''
         CREATE TABLE playlists (
@@ -44,11 +48,11 @@ def create_database():
     conn.close()
 
 setUp_database()
-conn = sqlite3.connect('src/database.db', check_same_thread=False)
+conn = sqlite3.connect(file, check_same_thread=False)
 cursor = conn.cursor()
 
 def add_database(name, artist, playlist_id, date):
-    conn = sqlite3.connect('src/database.db', check_same_thread=False)
+    conn = sqlite3.connect(file, check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO playlists (playlist_id, date_column) VALUES (?, ?)", (playlist_id, date))
 
@@ -104,10 +108,11 @@ def SpotifyLogin():
 #logs out
 @app.route("/logout")
 def SpotifyLogout():
-      session.clear()
-      if os.path.exists(".cache"):
-            os.remove(".cache")
-      return render_template('home.html', message="You have been logged out.")
+    session.clear()
+    if os.path.exists(".cache"):
+        os.remove(".cache")
+    webbrowser.open_new("https://accounts.spotify.com/en/logout")
+    return render_template('home.html', message="You have been logged out.")
 
 
 #creates spotify oauth object
@@ -290,7 +295,7 @@ def makePlaylist():
 #out of the 10, chooses 2 at random to increase variety
 def userTopArtistSeeds(headers):
     artistList=[]
-    limit = '10'
+    limit = '20'
     timeRange ="short_term"
 
     #API call to get users top artists
@@ -298,8 +303,7 @@ def userTopArtistSeeds(headers):
     r=r.json()
     for artists in r['items']:
          artistList.append(artists['id'])
-         print(artists['name'])
-    randomArtists= (random.choices(artistList, k=2))
+    randomArtists= (random.sample(artistList, k=2))
     return ','.join(randomArtists)
 
 #gets 10 of the users top medium term artists and compiles a list of all of their genres 
@@ -312,12 +316,15 @@ def userTopGenreSeeds(headers):
     #API call to get users medium term artists
     r= requests.get(BASE_URL + "me/top/artists?limit=" +limit + "&time_range="+timeRange, headers=headers)
     r=r.json()
+
+    #for all of the artists, get their genres (more than one per artist)
     for artists in r['items']:
          genres.append((artists['genres']))
         
+    #remove any duplicates in the genres
     flatlist=[element for sublist in genres for element in sublist]
     genreList = [*set(flatlist)]
-    randomGenres= (random.choices(genreList, k=1))
+    randomGenres= (random.sample(genreList, k=1))
     return ','.join(randomGenres)
     
 #gets 10 of the users short term tracks  to make sure that the songs are ones that the user is actively listening to
@@ -333,7 +340,7 @@ def userTopTracksSeeds(headers):
     for album in r['items']:
          trackList.append(album['id'])
 
-    randomTracks= (random.choices(trackList, k=2))
+    randomTracks= (random.sample(trackList, k=2))
     return ','.join(randomTracks)
 
 #takes in the list of song ids and will return an array of their names
@@ -358,7 +365,6 @@ def getTrackArtist(recList, headers):
 
 #returns a string list of track ids for recs for a clear day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsClear(trackLists, genreList, artistList, headers):
-    print("clear weather")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&max_danceability=" + '0.8' + "&min_energy=" + '0.6' + "&min_tempo=" + '120' + "&min_valence=" + '0.6' + "&limit=" + limit, headers=headers)
@@ -369,7 +375,6 @@ def getRecsClear(trackLists, genreList, artistList, headers):
    
 #returns a string list of track ids for recs for a rainy day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsRain(trackLists, genreList, artistList, headers):
-    print('raining')
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_valence=" + '0.4' + "&limit=" + limit, headers=headers)
@@ -380,7 +385,6 @@ def getRecsRain(trackLists, genreList, artistList, headers):
      
 #returns a string list of track ids for recs for when drizzling conditions by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsDrizzle(trackLists, genreList, artistList, headers):
-    print("drizzling")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=" + '0.8' + "&limit=" + limit, headers=headers)
@@ -391,7 +395,6 @@ def getRecsDrizzle(trackLists, genreList, artistList, headers):
 
 #returns a string list of track ids for recs for when thundering by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsThunder(trackLists, genreList, artistList, headers):
-    print("thundering")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.6' + "&min_energy=" + '0.7' + "&min_tempo=" + '130' + "&min_loudness=" + 0.5 + "&limit=" + limit, headers=headers)
@@ -402,7 +405,6 @@ def getRecsThunder(trackLists, genreList, artistList, headers):
      
 #returns a string list of track ids for recs for a snowy day by passing in winterTracks, top artists chosen, and winter genre
 def getRecsSnow(winterTracks, winterGenres, artistList, headers):
-    print("snowing")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + winterTracks + "&seed_artists=" + artistList + "&seed_genres=" + winterGenres + "&limit=" + limit, headers=headers)
@@ -413,7 +415,6 @@ def getRecsSnow(winterTracks, winterGenres, artistList, headers):
 
 #returns a string list of track ids for recs for a cloudy day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsClouds(trackLists, genreList, artistList, headers):
-    print("cloudy")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_danceability=" + '0.5' + "&max_danceability=" + '0.8' + "&min_energy=" + '0.6' + "&min_tempo=" + '100' + "&limit=" + limit, headers=headers)
@@ -424,7 +425,6 @@ def getRecsClouds(trackLists, genreList, artistList, headers):
      
 #returns a string list of track ids for recs for a misty day by passing in the top tracks chosen, top artists chosen, and genre chosen
 def getRecsMist(trackLists, genreList, artistList, headers):
-    print("misty")
     recList=[]
     limit ='20'
     r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=" + '0.8' + "&min_danceability=" + '0.5' + "&max_danceability=" + '0.8' + "&limit=" + limit, headers=headers)
