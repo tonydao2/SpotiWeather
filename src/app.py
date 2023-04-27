@@ -27,6 +27,7 @@ def create_database():
     c.execute('''
         CREATE TABLE playlists (
             playlist_id varchar(255),
+            user_column varchar(255),
             date_column DATE,
             PRIMARY KEY (playlist_id)
             )''')
@@ -47,6 +48,7 @@ def create_database():
             FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE
             )''')
     
+    
     conn.commit()
     conn.close()
 
@@ -55,14 +57,13 @@ conn = sqlite3.connect(file, check_same_thread=False)
 cursor = conn.cursor()
 
 #adds playlist generated to database
-def add_database(name, artist, playlist_id, date):
+def add_database(user, name, artist, playlist_id, date):
     conn = sqlite3.connect(file, check_same_thread=False)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO playlists (playlist_id, date_column) VALUES (?, ?)", (playlist_id, date))
+    cursor.execute("INSERT INTO playlists (playlist_id, user_column, date_column) VALUES (?, ?, ?)", (playlist_id, user, date))
 
     for song in range(len(name)):
         cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES (?, ?)", (name[song], playlist_id ))
-
         cursor.execute("INSERT INTO playlist_artists (name, playlist_id) VALUES (?, ?)", (artist[song], playlist_id ))
 
     conn.commit()
@@ -71,18 +72,20 @@ def add_database(name, artist, playlist_id, date):
 #database for storing old user playlists
 @app.route("/oldPlaylist" , methods=['GET', 'POST'])
 def oldPlaylist():
+    userID=session.get('userID')
     if request.method == 'POST':
-        playlist_id = request.form.get('playlist_id')
+        query = f"SELECT playlist_id FROM playlist WHERE user_column = {userID}"
+        playlist_id = cursor.execute(query)
         cursor.execute("SELECT name FROM playlist_songs WHERE playlist_id = '{0}'".format(playlist_id))
         songs = cursor.fetchall()
-        cursor.execute("SELECT name FROM playlist_artists WHERE playlist_id = '{0}'".format(playlist_id))
+        cursor.execute("SELECT name FROM playlist_artists,user WHERE playlist_id = '{0}' ".format(playlist_id))
         artist = cursor.fetchall()
-        print(songs)
-        print(artist)
-
+        #print(songs)
+        #print(artist)
         return render_template('oldPlaylist.html', songs=songs, artist=artist, message="Here is your old playlist")
     else:
-        cursor.execute("SELECT date_column, playlist_id FROM playlists") # Shows all previous albums to choose from
+        query=f"SELECT date_column, playlist_id FROM playlists WHERE user_column = {userID}"
+        cursor.execute(query) # Shows all previous albums to choose from
         playlists = cursor.fetchall()
         return render_template('oldPlaylist.html', playlists=playlists, message="These are your old playlists")
 
@@ -157,26 +160,25 @@ def getLocation():
 
 
      
-#gets the access code from oauth to exchange for the access token
+#gets the access token and generates initial recs for user
 @app.route("/redirect/")
 def redirectPage():
+    #gets the access code from oauth to exchange for the access token
     sp_oauth=create_spotify_oauth()
     session.clear()
     code=request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session[TOKEN_INFO]=token_info
-    return redirect(url_for('getPlaylist', _external=True))
 
-
-@app.route("/getPlaylist")
-def getPlaylist():
     #call apis to get users location and the weather at the location and store results in session variables
     cityName = getLocation()
     result = weatherSearch(cityName)
     weatherCondition = result.get("weather")[0].get("description")
 
+    #store info in session variables
     session['weather']=weatherCondition
     session['result'] = result
+    session['city']=cityName
 
     #if access token did not work, redirect back to main page to log in again
     try: 
@@ -189,39 +191,39 @@ def getPlaylist():
     headers = {'Authorization': 'Bearer {token}'.format(token=token_info['access_token'])}
     session['headers']=headers
 
+    # winter recommendations
+    session['winterTracks'] = ','.join(random.choices(["0bYg9bo50gSsH3LtXe2SQn", "0lizgQ7Qw35od7CYaoMBZb", "2uFaJJtFpPDc5Pa95XzTvg", "7uoFMmxln0GPXQ0AcCBXRq", "2L9QLAhrvtP4EYg1lY0Tnw", "5PuKlCjfEVIXl0ZBp5ZW9g", "65irrLqfCMRiO3p87P4C0D", "5Q2P43CJra0uRAogjHyJDK", "0qcr5FMsEO85NAQjrlDRKo", "1jhljxXlHw8K9rezXKrnow", "2QjOHCTQ1Jl3zawyYOpxh6"], k=2))
+    session['winterGenres'] = "Christmas"
+
+    #lists of weather conditions, stored in session variables
+    session['clearList'] = ['clear', 'clear sky']
+    session['rainList'] = ['rain', 'light rain', 'moderate rain', 'very heavy rain', 'extreme rain', 'freezing rain', 'light intensity shower rain', 'shower rain', 'heavy intensity shower rain', 'ragged shower rain']
+    session['drizzleList'] = ['light intensity drizzle', 'drizzle', 'heavy intensity drizzle', 'light intensity drizzle rain', 'drizzle rain', 'heavy intensity drizzle rain', 'shower rain and drizzle', 'heavy shower rain and drizzle', 'shower drizzle']
+    session['thunderList'] = ['thunderstorm with light rain', 'thunderstorm with heavy rain', 'thunderstorm with rain', 'thunderstorm', 'light thunderstorm', 'heavy thunderstorm', 'ragged thunderstorm', 'thunderstorm with light drizzle', 'thunderstorm with heavy drizzle',  'thunderstorm with drizzle']
+    session['cloudList'] = ['few clouds', 'scattered clouds' , 'broken clouds', 'overcast clouds']
+    session['atmosphereList'] = ['mist', 'smoke', 'haze', 'sand whirls', 'dust whirls', 'dust', 'sand', 'volcanic ash', 'fog', 'squalls', 'tornado']
+    session['snowList'] = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
+    
     #generate the users top artists, genres, and tracks 
     trackList = userTopTracksSeeds(headers)
     genreList =userTopGenreSeeds(headers)
     artistList = userTopArtistSeeds(headers)
 
-    #get winter recommendations
-    winterTracks = ','.join(random.choices(["0bYg9bo50gSsH3LtXe2SQn", "0lizgQ7Qw35od7CYaoMBZb", "2uFaJJtFpPDc5Pa95XzTvg", "7uoFMmxln0GPXQ0AcCBXRq", "2L9QLAhrvtP4EYg1lY0Tnw", "5PuKlCjfEVIXl0ZBp5ZW9g", "65irrLqfCMRiO3p87P4C0D", "5Q2P43CJra0uRAogjHyJDK", "0qcr5FMsEO85NAQjrlDRKo", "1jhljxXlHw8K9rezXKrnow", "2QjOHCTQ1Jl3zawyYOpxh6"], k=2))
-    winterGenres = "Christmas"
-
-    #lists of weather conditions
-    clearList = ['clear', 'clear sky']
-    rainList = ['rain', 'light rain', 'moderate rain', 'very heavy rain', 'extreme rain', 'freezing rain', 'light intensity shower rain', 'shower rain', 'heavy intensity shower rain', 'ragged shower rain']
-    drizzleList = ['light intensity drizzle', 'drizzle', 'heavy intensity drizzle', 'light intensity drizzle rain', 'drizzle rain', 'heavy intensity drizzle rain', 'shower rain and drizzle', 'heavy shower rain and drizzle', 'shower drizzle']
-    thunderList = ['thunderstorm with light rain', 'thunderstorm with heavy rain', 'thunderstorm with rain', 'thunderstorm', 'light thunderstorm', 'heavy thunderstorm', 'ragged thunderstorm', 'thunderstorm with light drizzle', 'thunderstorm with heavy drizzle',  'thunderstorm with drizzle']
-    cloudList = ['few clouds', 'scattered clouds' , 'broken clouds', 'overcast clouds']
-    atmosphereList = ['mist', 'smoke', 'haze', 'sand whirls', 'dust whirls', 'dust', 'sand', 'volcanic ash', 'fog', 'squalls', 'tornado']
-    snowList = ['light snow', 'snow', 'heavy snow', 'sleet', 'light shower sleet', 'shower sleet', 'light rain and snow', 'rain and snow', 'light shower snow', 'shower snow', 'heavy shower snow']
-    
     #compare weather conditions to what is in list to know which rec function to call
-    if weatherCondition in clearList:
+    if weatherCondition in session['clearList']:
         recs = getRecsClear(trackList, genreList, artistList, headers)
-    elif weatherCondition in rainList:
+    elif weatherCondition in  session['rainList']:
          recs = getRecsRain(trackList, genreList, artistList, headers)
-    elif weatherCondition in drizzleList:
+    elif weatherCondition in session['drizzleList']:
          recs = getRecsDrizzle(trackList, genreList, artistList, headers)
-    elif weatherCondition in thunderList:
+    elif weatherCondition in session['thunderList']:
          recs = getRecsThunder(trackList, genreList, artistList, headers)
-    elif weatherCondition in cloudList:
+    elif weatherCondition in session['cloudList']:
          recs = getRecsClouds(trackList, genreList, artistList, headers)
-    elif weatherCondition in atmosphereList:
+    elif weatherCondition in session['atmosphereList']:
          recs = getRecsMist(trackList, genreList, artistList, headers)
-    elif weatherCondition in snowList:
-         recs = getRecsSnow(winterTracks, winterGenres, artistList, headers)
+    elif weatherCondition in session['snowList']:
+         recs = getRecsSnow(session['winterTracks'], session['winterGenres'], artistList, headers)
     else: 
          recs = getRecsClear(trackList, genreList, artistList, headers)
 
@@ -235,10 +237,65 @@ def getPlaylist():
     username=getUserName(headers)
     session['username']=username
 
+    return redirect(url_for('getPlaylist', _external=True))
+
+
+#gets the recs and song info to display with weather on page
+@app.route("/getPlaylist")
+def getPlaylist():
+    #get all of the info stored in rec functions
+    username=session['username']
+    headers=session['headers']
+    result=session['result']
+    recsName=session['recsName']
+    recsArtist= session['recsArtist']
+    recs= session['recs']
+
     return render_template('redirect.html', name=username , weatherResponse=True, 
     cityName=result.get("name"), temp=math.floor(result.get("main").get("temp")), 
     description=result.get("weather")[0].get("description"), h=result.get("main").get("humidity"), recsName = recsName, recsArtist = recsArtist, 
     recList=recs, headers=headers)
+
+#if the user wants to regenerate recs, need to chose new top artists, songs, genres and generates new recs
+@app.route("/remakeRecs")
+def remakeRecs():
+    #get session variables for headers and weather 
+    weatherCondition= session.get('weather')
+    headers= session.get('headers')
+
+    #generate the users top artists, genres, and tracks 
+    trackList = userTopTracksSeeds(headers)
+    genreList =userTopGenreSeeds(headers)
+    artistList = userTopArtistSeeds(headers)
+
+    #compare weather conditions to what is in list to know which rec function to call
+    if weatherCondition in session['clearList']:
+        recs = getRecsClear(trackList, genreList, artistList, headers)
+    elif weatherCondition in  session['rainList']:
+         recs = getRecsRain(trackList, genreList, artistList, headers)
+    elif weatherCondition in session['drizzleList']:
+         recs = getRecsDrizzle(trackList, genreList, artistList, headers)
+    elif weatherCondition in session['thunderList']:
+         recs = getRecsThunder(trackList, genreList, artistList, headers)
+    elif weatherCondition in session['cloudList']:
+         recs = getRecsClouds(trackList, genreList, artistList, headers)
+    elif weatherCondition in session['atmosphereList']:
+         recs = getRecsMist(trackList, genreList, artistList, headers)
+    elif weatherCondition in session['snowList']:
+         recs = getRecsSnow(session['winterTracks'], session['winterGenres'], artistList, headers)
+    else: 
+         print("error)")
+         recs = getRecsClear(trackList, genreList, artistList, headers)
+
+    #update the rec info in the session variables 
+    session['recs']=recs
+    recsName = getTrackName(recs,headers)
+    session['recsName']=recsName
+    recsArtist = getTrackArtist(recs, headers)
+    session['recsArtist']=recsArtist
+
+    #return the new info
+    return redirect(url_for('getPlaylist', _external=True))
 
 
 #function to get the access token which is needed to be passed into api requests
@@ -264,16 +321,12 @@ def getUserName(headers):
     except:
          return "User!"
     
-#function to get userID
-def getUserID(headers):
-    r = requests.get(BASE_URL + 'me', headers=headers)
-    r.raise_for_status()
-    r=r.json()
-    return r['uri']
-    
+
+
+#makes a playlist in the spotify users library of the recs
 @app.route("/makePlaylist")
 def makePlaylist():
-    #get all of the session variables needed
+    #get all of the session variables / info needed 
     username = session.get("username")
     recsName = session.get("recsName")
     recsArtist = session.get("recsArtist")
@@ -282,9 +335,11 @@ def makePlaylist():
     weather=session.get("weather")
     songRecs = session.get("recs")
 
+    #get the userID, will need for database
     r = requests.get(BASE_URL + 'me', headers=headers)
     r=r.json()
     userID= r['id']
+    session['userID']=userID
 
     today = date.today()
     dateFormat = today.strftime("%m/%d")
@@ -300,7 +355,7 @@ def makePlaylist():
     
 
     # Add info to database
-    add_database(recsName, recsArtist, playlist_id, today)
+    add_database(userID, recsName, recsArtist, playlist_id, today)
 
     #need to add spotify:track: to all of the song ids
     songRecs = ["spotify:track:" + s for s in songRecs]
@@ -351,8 +406,8 @@ def userTopGenreSeeds(headers):
     randomGenres= (random.sample(genreList, k=1))
     return ','.join(randomGenres)
     
-#gets 10 of the users short term tracks  to make sure that the songs are ones that the user is actively listening to
-#out of the 10, chooses 2 at random to increase variety
+#gets 20 of the users short term tracks  to make sure that the songs are ones that the user is actively listening to
+#out of the 20, chooses 2 at random to increase variety
 def userTopTracksSeeds(headers):
     trackList=[]
     limit = '20'

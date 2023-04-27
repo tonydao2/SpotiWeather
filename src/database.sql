@@ -4,7 +4,8 @@ CREATE DATABASE IF NOT EXISTS spotiweather;
 
 CREATE TABLE playlists {
     playlist_id int AUTOINCREMENT,
-    date
+    user_column VARCHAR(255),
+    date,
     PRIMARY KEY (id)
     };
 
