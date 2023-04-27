@@ -11,14 +11,16 @@ import sqlite3
 
 app = Flask(__name__)
 
-
+#gets file path for database
 PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 file = os.path.join(PROJECT_PATH, 'database.db')
 
+#set database, checks if it exists and makes if not
 def setUp_database():
     if not os.path.isfile(file):
         create_database()
 
+#creates database
 def create_database():
     conn = sqlite3.connect(file)
     c = conn.cursor()
@@ -52,6 +54,7 @@ setUp_database()
 conn = sqlite3.connect(file, check_same_thread=False)
 cursor = conn.cursor()
 
+#adds playlist generated to database
 def add_database(name, artist, playlist_id, date):
     conn = sqlite3.connect(file, check_same_thread=False)
     cursor = conn.cursor()
@@ -64,6 +67,8 @@ def add_database(name, artist, playlist_id, date):
 
     conn.commit()
 
+
+#database for storing old user playlists
 @app.route("/oldPlaylist" , methods=['GET', 'POST'])
 def oldPlaylist():
     if request.method == 'POST':
@@ -162,6 +167,7 @@ def redirectPage():
     session[TOKEN_INFO]=token_info
     return redirect(url_for('getPlaylist', _external=True))
 
+
 @app.route("/getPlaylist")
 def getPlaylist():
     #call apis to get users location and the weather at the location and store results in session variables
@@ -258,7 +264,13 @@ def getUserName(headers):
     except:
          return "User!"
     
-
+#function to get userID
+def getUserID(headers):
+    r = requests.get(BASE_URL + 'me', headers=headers)
+    r.raise_for_status()
+    r=r.json()
+    return r['uri']
+    
 @app.route("/makePlaylist")
 def makePlaylist():
     #get all of the session variables needed
@@ -307,7 +319,7 @@ def makePlaylist():
 #out of the 10, chooses 2 at random to increase variety
 def userTopArtistSeeds(headers):
     artistList=[]
-    limit = '20'
+    limit = '10'
     timeRange ="short_term"
 
     #API call to get users top artists

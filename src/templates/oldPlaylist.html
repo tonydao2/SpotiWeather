@@ -36,7 +36,7 @@
         {% if playlists %}
             <div class="listContainer">
                 <ul class="ul1">
-                    Choose from your past playlists to see the song
+                    Choose from your past playlists to see the songs
                     {% for playlist in playlists %}
                         <form method="POST", action="/oldPlaylist">
                             <li class="li1" onclick="this.parentNode.submit();">
