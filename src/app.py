@@ -69,12 +69,17 @@ def oldPlaylist():
         songs = cursor.fetchall()
         cursor.execute("SELECT name FROM playlist_artists WHERE playlist_id = '{0}'".format(playlist_id))
         artist = cursor.fetchall()
-        print(songs)
-        print(artist)
 
         return render_template('oldPlaylist.html', songs=songs, artist=artist, message="Here is your old playlist")
     else:
-        cursor.execute("SELECT date_column, playlist_id, userID FROM playlists") # Shows all previous albums to choose from
+        headers = session.get("headers")
+        r = requests.get(BASE_URL + 'me', headers=headers)
+        r=r.json()
+        userID= r['id']
+
+        print(userID)
+
+        cursor.execute("SELECT date_column, playlist_id FROM playlists WHERE userID = '{0}'".format(userID)) # Shows all previous albums to choose from
         playlists = cursor.fetchall()
         return render_template('oldPlaylist.html', playlists=playlists, message="These are your old playlists")
 
@@ -271,6 +276,8 @@ def makePlaylist():
     r = requests.get(BASE_URL + 'me', headers=headers)
     r=r.json()
     userID= r['id']
+
+    session['userID']=userID
 
     today = date.today()
     dateFormat = today.strftime("%m/%d")

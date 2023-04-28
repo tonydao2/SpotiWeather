@@ -40,8 +40,8 @@
                     {% for playlist in playlists %}
                         <form method="POST", action="/oldPlaylist">
                             <li class="li1" onclick="this.parentNode.submit();">
-                                {{ playlist[2] }}
-                                <input type="hidden" name="userid" value="{{playlist[2]}}">
+                                {{ playlist[0] }}
+                                <input type="hidden" name="userID" value="{{playlist[2]}}">
                                 <input type="hidden" name="playlist_id" value="{{playlist[1]}}">
                             </li>
                         </form>
