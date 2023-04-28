@@ -24,6 +24,8 @@ def setUp_database():
 def create_database():
     conn = sqlite3.connect(file)
     c = conn.cursor()
+
+    #initilize records for userID, dates, and songs/artists for users playlists
     c.execute('''
         CREATE TABLE playlists (
             playlist_id varchar(255),
@@ -61,6 +63,7 @@ def add_database(name, artist, playlist_id, date, userID):
     cursor = conn.cursor()
     cursor.execute("INSERT INTO playlists (userID, playlist_id, date_column) VALUES (?, ?, ?)", (userID, playlist_id, date))
 
+    #adds each song and artist to playlist in database
     for song in range(len(name)):
         cursor.execute("INSERT INTO playlist_songs (name, playlist_id) VALUES (?, ?)", (name[song], playlist_id ))
 
@@ -453,7 +456,7 @@ def getRecsRain(trackLists, genreList, artistList, headers):
 def getRecsDrizzle(trackLists, genreList, artistList, headers):
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=0.8" + "&target_instrumentalness=0.6" + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&min_acousticness=" + '0.7' + "&max_acousticness=0.8" + "&max_valence=0.6" +  "&target_instrumentalness=0.6" + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
          recList.append(album['id'])
@@ -463,7 +466,7 @@ def getRecsDrizzle(trackLists, genreList, artistList, headers):
 def getRecsThunder(trackLists, genreList, artistList, headers):
     recList=[]
     limit ='20'
-    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&target_danceability=0.6" + "&min_energy=0.7" + "&min_tempo=130" + "&min_loudness=0.6" + "&limit=" + limit, headers=headers)
+    r=requests.get(BASE_URL + "recommendations/?seed_tracks=" + trackLists + "&seed_artists=" + artistList + "&seed_genres=" + genreList + "&target_danceability=0.6" + "&min_energy=0.7" + "&min_tempo=130" + "&limit=" + limit, headers=headers)
     r=r.json()
     for album in r['tracks']:
          recList.append(album['id'])
