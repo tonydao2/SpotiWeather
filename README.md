@@ -36,3 +36,10 @@ Upon arrival to the web app, the user will log into their spotify. The web app w
 #### User Story 6:
 As a user I want two distinct playlists for two days with the same weather
 Upon arrival to the website main page, the User will see a text box where they will log in to their spotify. After logging in, the application will generate playlist based on the weather and precipitation of their location. Our web app will get different, randomized, info for that day to ensure variation in playlist generation. This ensures that no two days will have the same playlist.
+
+### Demo Video:
+
+
+
+https://user-images.githubusercontent.com/123415277/235827947-926348bd-4f2e-4f76-b0cc-7a786bdb8016.mov
+
