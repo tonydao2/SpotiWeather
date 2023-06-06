@@ -1,5 +1,3 @@
-# 411-Project
-
 ## Assignments:
 
 ### Assignment 1:
